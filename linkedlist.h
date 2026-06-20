@@ -14,7 +14,9 @@ private:
         Node* m_nextPtr{};
     };
 
+private:
     static Node* createNode(const T data);
+    void copy(const LinkedList<T>& other);
 
 private:
     Node* m_head{};
@@ -26,10 +28,9 @@ public:
     LinkedList(const LinkedList& other) { copy(other); }
     ~LinkedList() { clear(); }
 
-    void pushBack(const T data);
-    void pushFront(const T data);
+    void pushBack(const T& data);
+    void pushFront(const T& data);
     void clear();
-    void copy(const LinkedList<T>& other);
 
     std::optional<T> get(const std::size_t index) const;
     std::size_t getSize() const { return m_size; }
@@ -105,7 +106,7 @@ LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& other)
 template <typename U>
 std::ostream& operator<<(std::ostream& out, const LinkedList<U>& ll)
 {
-    std::cout << '[';
+    out << '[';
     auto separator { "" };
 
     typename LinkedList<U>::Node* temp { ll.m_head };
@@ -134,7 +135,7 @@ typename LinkedList<T>::Node* LinkedList<T>::createNode(const T data)
 }
 
 template <typename T>
-void LinkedList<T>::pushBack(const T data)
+void LinkedList<T>::pushBack(const T& data)
 {
     Node* node { LinkedList<T>::createNode(data) };
 
@@ -154,7 +155,7 @@ void LinkedList<T>::pushBack(const T data)
 }
 
 template <typename T>
-void LinkedList<T>::pushFront(const T data)
+void LinkedList<T>::pushFront(const T& data)
 {
     Node* node { LinkedList<T>::createNode(data) };
 
