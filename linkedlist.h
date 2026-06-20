@@ -3,6 +3,7 @@
 #include <iostream> // std::cout
 #include <optional> // element getter return type
 #include <utility>  // std::as_const to treat *this as a const
+#include <cassert>  // assert of subscript operator bound check
 
 template <typename T>
 class LinkedList
@@ -10,6 +11,16 @@ class LinkedList
 public:
     LinkedList() = default;
     LinkedList(const LinkedList& other) { copy(other); }
+    LinkedList(LinkedList&& other) noexcept
+        : m_head { other.m_head }
+        , m_tail { other.m_tail }
+        , m_size { other.m_size }
+    {
+        other.m_head = nullptr;
+        other.m_tail = nullptr;
+        other.m_size = 0;
+    }
+
     ~LinkedList() { clear(); }
 
     void pushBack(const T& data);
@@ -23,6 +34,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const LinkedList<U>& ll);
 
     LinkedList& operator=(const LinkedList<T>& other);
+    LinkedList& operator=(LinkedList<T>&& other) noexcept;
     const T& operator[](const std::size_t index) const;
     T& operator[](const std::size_t index);
 
@@ -46,7 +58,9 @@ private:
 template <typename T>
 const T& LinkedList<T>::operator[](const std::size_t index) const
 {
-    LinkedList::Node* temp { m_head };
+    assert(index < m_size && "Index out of bounds.");
+
+    auto temp { m_head };
     std::size_t i{};
 
     for (; temp && i != index; ++i) {
@@ -83,7 +97,7 @@ template <typename T>
 void LinkedList<T>::clear()
 {
     while (m_head) {
-        LinkedList<T>::Node* temp { m_head->m_nextPtr };
+        auto temp { m_head->m_nextPtr };
         delete m_head;
         m_head = temp;
     }
@@ -95,18 +109,35 @@ void LinkedList<T>::clear()
 template <typename T>
 LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& other)
 {
-    if (this == &other) {
-        return *this;
+    if (this != &other) {
+        copy(other);
     }
 
-    copy(other);
+    return *this;
+}
+
+template <typename T>
+LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>&& other) noexcept
+{
+    if (this != &other) {
+        clear();
+
+        m_head = other.m_head;
+        m_tail = other.m_tail;
+        m_size = other.m_size;
+
+        other.m_head = nullptr;
+        other.m_tail = nullptr;
+        other.m_size = 0;
+    }
+
     return *this;
 }
 
 template <typename U>
 std::ostream& operator<<(std::ostream& out, const LinkedList<U>& ll)
 {
-    typename LinkedList<U>::Node* temp { ll.m_head };
+    auto temp { ll.m_head };
 
     out << '[';
     auto separator { "" };

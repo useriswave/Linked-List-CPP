@@ -21,6 +21,8 @@ int main()
     LinkedList<int> ll2;
     ll2 = ll;
 
+    std::cout << ll[2] << '\n';
+
     std::cout << "Linked List size: " << ll.getSize() << '\n';
     std::cout << ll << '\n';
 
