@@ -7,22 +7,6 @@
 template <typename T>
 class LinkedList
 {
-private:
-    struct Node
-    {
-        T m_data{};
-        Node* m_nextPtr{};
-    };
-
-private:
-    static Node* createNode(const T data);
-    void copy(const LinkedList<T>& other);
-
-private:
-    Node* m_head{};
-    Node* m_tail{};
-    std::size_t m_size{};
-
 public:
     LinkedList() = default;
     LinkedList(const LinkedList& other) { copy(other); }
@@ -41,6 +25,22 @@ public:
     LinkedList& operator=(const LinkedList<T>& other);
     const T& operator[](const std::size_t index) const;
     T& operator[](const std::size_t index);
+
+private:
+    struct Node
+    {
+        T m_data{};
+        Node* m_nextPtr{};
+    };
+
+private:
+    static Node* createNode(const T& data);
+    void copy(const LinkedList<T>& other);
+
+private:
+    Node* m_head{};
+    Node* m_tail{};
+    std::size_t m_size{};
 };
 
 template <typename T>
@@ -106,23 +106,23 @@ LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& other)
 template <typename U>
 std::ostream& operator<<(std::ostream& out, const LinkedList<U>& ll)
 {
+    typename LinkedList<U>::Node* temp { ll.m_head };
+
     out << '[';
     auto separator { "" };
 
-    typename LinkedList<U>::Node* temp { ll.m_head };
-
     while (temp != nullptr) {
-        std::cout << separator << temp->m_data;
+        out << separator << temp->m_data;
         separator = ", ";
         temp = temp->m_nextPtr;
     }
 
-    std::cout << ']';
+    out << ']';
     return out;
 }
 
 template <typename T>
-typename LinkedList<T>::Node* LinkedList<T>::createNode(const T data)
+typename LinkedList<T>::Node* LinkedList<T>::createNode(const T& data)
 {
     Node* node { new (std::nothrow) Node };
 
